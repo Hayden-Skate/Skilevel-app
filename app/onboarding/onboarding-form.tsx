@@ -49,7 +49,8 @@ export default function OnboardingForm() {
       await user.update({ firstName: String(data.get('firstName') ?? ''), lastName: String(data.get('lastName') ?? ''), unsafeMetadata: { ...user.unsafeMetadata, accountRole: role } });
       await user.reload(); router.replace('/dashboard'); router.refresh();
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'We could not save your account. Please try again.'); setSaving(false);
+      const message = caught instanceof Error ? caught.message : typeof caught === 'object' && caught && 'message' in caught ? String(caught.message) : 'We could not save your account. Please try again.';
+      setError(message); setSaving(false);
     }
   }
 

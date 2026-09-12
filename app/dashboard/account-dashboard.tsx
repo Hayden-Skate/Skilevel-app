@@ -29,7 +29,10 @@ export default function AccountDashboard() {
         const { data, error: studentError } = await supabase.from('students').select('id,name,age,sport,years_experience,home_mountain,self_rated_level,share_slug').eq('owner_user_id', account.id).order('created_at');
         if (studentError) throw studentError;
         if (active) { const profiles = (data ?? []) as StudentProfile[]; setStudents(profiles); setSelectedId(current => current || profiles[0]?.id || ''); }
-      } catch (caught) { if (active) setError(caught instanceof Error ? caught.message : 'Could not load student profiles.'); }
+      } catch (caught) {
+        const message = caught instanceof Error ? caught.message : typeof caught === 'object' && caught && 'message' in caught ? String(caught.message) : 'Could not load student profiles.';
+        if (active) setError(message);
+      }
       finally { if (active) setLoading(false); }
     }
     loadStudents(); return () => { active = false; };
